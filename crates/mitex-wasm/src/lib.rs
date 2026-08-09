@@ -56,6 +56,13 @@ mod impls {
     pub fn convert_text(input: &str, spec: &[u8]) -> Result<String, String> {
         mitex::convert_text(input, extract_spec(spec))
     }
+
+    /// Converts math in the itex dialect: runs of letters are single
+    /// upright identifiers (itex2MML tokenization).
+    #[cfg_attr(feature = "web", wasm_bindgen)]
+    pub fn convert_math_itex(input: &str, spec: &[u8]) -> Result<String, String> {
+        mitex::convert_math_itex(input, extract_spec(spec))
+    }
 }
 
 /// Wrappers for Typst as the host
@@ -93,6 +100,17 @@ mod wasm_host {
     pub fn convert_text(input: &[u8], spec: &[u8]) -> Result<Vec<u8>, String> {
         let input = wasm_into_str(input)?;
         let res = super::impls::convert_text(input, spec)?;
+        Result::Ok(res.into_bytes())
+    }
+
+    /// See [`super::impls::convert_math_itex`]
+    ///
+    /// # Errors
+    /// Returns an error if the input is not a valid utf-8 string
+    #[cfg_attr(feature = "typst-plugin", wasm_func)]
+    pub fn convert_math_itex(input: &[u8], spec: &[u8]) -> Result<Vec<u8>, String> {
+        let input = wasm_into_str(input)?;
+        let res = super::impls::convert_math_itex(input, spec)?;
         Result::Ok(res.into_bytes())
     }
 }
