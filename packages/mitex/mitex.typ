@@ -16,6 +16,8 @@
 #let mitex-convert(it, mode: "math", spec: bytes(())) = {
   if mode == "math" {
     str(mitex-wasm.convert_math(bytes(get-elem-text(it)), spec))
+  } else if mode == "math-itex" {
+    str(mitex-wasm.convert_math_itex(bytes(get-elem-text(it)), spec))
   } else {
     str(mitex-wasm.convert_text(bytes(get-elem-text(it)), spec))
   }
@@ -24,6 +26,13 @@
 // Math Mode
 #let mimath(it, block: true, ..args) = {
   let res = mitex-convert(mode: "math", it)
+  let eval-res = eval("$" + res + "$", scope: mitex-scope)
+  math.equation(block: block, eval-res, ..args)
+}
+
+// Math Mode, itex dialect (letter runs are single upright identifiers)
+#let mimath-itex(it, block: true, ..args) = {
+  let res = mitex-convert(mode: "math-itex", it)
   let eval-res = eval("$" + res + "$", scope: mitex-scope)
   math.equation(block: block, eval-res, ..args)
 }
@@ -43,3 +52,5 @@
 }
 
 #let mi = mimath.with(block: false)
+#let mi-itex = mimath-itex.with(block: false)
+#let mitex-itex = mimath-itex

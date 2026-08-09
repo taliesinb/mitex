@@ -37,6 +37,8 @@ enum LaTeXEnv {
 }
 
 pub struct Converter {
+    /// itex dialect: letter runs become single upright identifiers
+    word_identifiers: bool,
     mode: LaTeXMode,
     env: LaTeXEnv,
     // indent for itemize and enumerate
@@ -49,8 +51,13 @@ pub struct Converter {
 
 impl Converter {
     fn new(mode: LaTeXMode) -> Self {
+        Self::new_opts(mode, false)
+    }
+
+    fn new_opts(mode: LaTeXMode, word_identifiers: bool) -> Self {
         Self {
             mode,
+            word_identifiers,
             env: LaTeXEnv::default(),
             indent: 0,
             label: None,
@@ -163,11 +170,33 @@ impl Converter {
             ItemBegin | ItemEnd => Err("clauses outside of environment".to_owned())?,
             TokenWord => {
                 if matches!(self.mode, LaTeXMode::Math) {
-                    // break up words into individual characters and add a space
                     let text = elem.as_token().unwrap().text().to_string();
-                    for prev in text.chars() {
-                        f.write_char(prev)?;
-                        f.write_char(' ')?;
+                    if self.word_identifiers {
+                        // itex dialect: a run of letters is a single
+                        // (upright, multi-character) identifier, as in
+                        // itex2MML's multi-char <mi> tokens.
+                        let mut chars = text.chars().peekable();
+                        while let Some(c) = chars.next() {
+                            if c.is_ascii_alphabetic()
+                                && chars.peek().is_some_and(|n| n.is_ascii_alphabetic())
+                            {
+                                let mut word = String::new();
+                                word.push(c);
+                                while chars.peek().is_some_and(|n| n.is_ascii_alphabetic()) {
+                                    word.push(chars.next().unwrap());
+                                }
+                                write!(f, "\"{}\" ", word)?;
+                            } else {
+                                f.write_char(c)?;
+                                f.write_char(' ')?;
+                            }
+                        }
+                    } else {
+                        // break up words into individual characters and add a space
+                        for prev in text.chars() {
+                            f.write_char(prev)?;
+                            f.write_char(' ')?;
+                        }
                     }
                 } else {
                     // write the word directly in text mode
@@ -1196,13 +1225,14 @@ impl Converter {
 struct TypstRepr {
     elem: LatexSyntaxElem,
     mode: LaTeXMode,
+    word_identifiers: bool,
     spec: CommandSpec,
     error: Rc<RefCell<String>>,
 }
 
 impl fmt::Display for TypstRepr {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut ctx = Converter::new(self.mode);
+        let mut ctx = Converter::new_opts(self.mode, self.word_identifiers);
         if let Err(e) = ctx.convert(f, self.elem.clone(), &self.spec) {
             self.error.borrow_mut().push_str(&e.to_string());
             return Err(fmt::Error);
@@ -1230,12 +1260,25 @@ pub fn convert_node(
     mode: LaTeXMode,
     spec: Option<CommandSpec>,
 ) -> Result<String, String> {
+    convert_node_opts(node, mode, spec, false)
+}
+
+/// Like [`convert_node`], with the itex word-identifier dialect option:
+/// runs of letters convert to single upright identifiers ("Grpd")
+/// instead of products of italic variables, as itex2MML tokenizes them.
+pub fn convert_node_opts(
+    node: SyntaxNode,
+    mode: LaTeXMode,
+    spec: Option<CommandSpec>,
+    word_identifiers: bool,
+) -> Result<String, String> {
     let mut output = String::new();
     let err = String::new();
     let err = Rc::new(RefCell::new(err));
     let repr = TypstRepr {
         elem: LatexSyntaxElem::Node(node),
         mode,
+        word_identifiers,
         spec: spec.unwrap_or_else(|| DEFAULT_SPEC.clone()),
         error: err.clone(),
     };
