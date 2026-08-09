@@ -74,7 +74,8 @@
 #let arrow-handle(arrow-sym) = define-glob-cmd("{,b}t", "xarrow", handle: (..args) => {
   let pos = args.pos()
   if pos.len() >= 2 {
-    $limits(stretch(#arrow-sym)^#pos.at(1)_#pos.at(0))$
+    let below = pos.at(0).children.filter(it => it != [\[] and it != [\]]).sum()
+    $limits(stretch(#arrow-sym)^#pos.at(1)_#below)$
   } else {
     $limits(stretch(#arrow-sym)^#pos.at(0))$
   }
