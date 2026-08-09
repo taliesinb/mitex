@@ -195,7 +195,9 @@
   mathrm: define-cmd(1, alias: "upright"),
   mathit: define-cmd(1, alias: "italic"),
   mathnormal: define-cmd(1, alias: "italic"),
-  mathsf: define-cmd(1, alias: "sans"),
+  // LaTeX \mathsf is upright sans-serif; typst's sans() alone keeps
+  // the italic math shape.
+  mathsf: define-cmd(1, handle: it => math.upright(math.sans(it))),
   mathfrak: define-cmd(1, alias: "frak"),
   mathtt: define-cmd(1, alias: "mono"),
   Bbb: define-cmd(1, alias: "bb"),
