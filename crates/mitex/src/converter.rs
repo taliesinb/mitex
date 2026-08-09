@@ -1218,16 +1218,25 @@ pub fn convert_inner(
     spec: Option<CommandSpec>,
     do_parse: fn(input: &str, spec: CommandSpec) -> SyntaxNode,
 ) -> Result<String, String> {
-    let node = do_parse(input, spec.unwrap_or_else(|| DEFAULT_SPEC.clone()));
-    // println!("{:#?}", node);
-    // println!("{:#?}", node.text());
+    let node = do_parse(input, spec.clone().unwrap_or_else(|| DEFAULT_SPEC.clone()));
+    convert_node(node, mode, spec)
+}
+
+/// Convert an already-parsed syntax (sub)tree to typst code. This lets
+/// library consumers walk the CST, take over conversion of some subtrees
+/// (e.g. to draw diagrams), and delegate the rest to MiTeX.
+pub fn convert_node(
+    node: SyntaxNode,
+    mode: LaTeXMode,
+    spec: Option<CommandSpec>,
+) -> Result<String, String> {
     let mut output = String::new();
     let err = String::new();
     let err = Rc::new(RefCell::new(err));
     let repr = TypstRepr {
         elem: LatexSyntaxElem::Node(node),
         mode,
-        spec: DEFAULT_SPEC.clone(),
+        spec: spec.unwrap_or_else(|| DEFAULT_SPEC.clone()),
         error: err.clone(),
     };
     core::fmt::write(&mut output, format_args!("{}", repr)).map_err(|_| err.borrow().to_owned())?;

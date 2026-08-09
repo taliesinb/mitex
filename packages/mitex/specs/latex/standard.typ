@@ -69,7 +69,16 @@
 
 // 1. functions created to make it easier to define a spec
 #let operatornamewithlimits(it) = math.op(limits: true, math.upright(it))
-#let arrow-handle(arrow-sym) = define-cmd(1, handle: it => $limits(stretch(#arrow-sym)^#it)$)
+// \xrightarrow[below]{above}: the optional bracket argument is a label
+// under the arrow (amsmath).
+#let arrow-handle(arrow-sym) = define-glob-cmd("{,b}t", "xarrow", handle: (..args) => {
+  let pos = args.pos()
+  if pos.len() >= 2 {
+    $limits(stretch(#arrow-sym)^#pos.at(1)_#pos.at(0))$
+  } else {
+    $limits(stretch(#arrow-sym)^#pos.at(0))$
+  }
+})
 #let _greedy-handle(fn) = (..args) => $fn(#args.pos().sum())$
 #let greedy-handle(alias, fn) = define-greedy-cmd(alias, handle: _greedy-handle(fn))
 #let limits-handle(alias, wrap) = define-cmd(1, alias: alias, handle: it => math.limits(wrap(it)))
@@ -207,6 +216,8 @@
     let s = get-tex-str(it)
     s.clusters().map(x => $scr(#x)$).join()
   }),
+  // itex (Instiki/nLab): \underoverset{below}{above}{base}
+  underoverset: define-cmd(3, handle: (below, above, base) => math.attach(base, t: above, b: below)),
   mathbin: define-cmd(1, handle: it => math.class("binary", it)),
   mathclose: define-cmd(1, handle: it => math.class("closing", it)),
   mathinner: define-cmd(1, handle: it => math.class("fence", it)),
