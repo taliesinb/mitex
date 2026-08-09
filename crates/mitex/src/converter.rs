@@ -185,7 +185,11 @@ impl Converter {
                                 while chars.peek().is_some_and(|n| n.is_ascii_alphabetic()) {
                                     word.push(chars.next().unwrap());
                                 }
-                                write!(f, "\"{}\" ", word)?;
+                                // no trailing space: in typst math a
+                                // source space before ( renders as a gap
+                                // ("Core" (C) vs "Core"(C)); token
+                                // separation comes from TokenWhiteSpace.
+                                write!(f, "\"{}\"", word)?;
                             } else {
                                 f.write_char(c)?;
                                 f.write_char(' ')?;
