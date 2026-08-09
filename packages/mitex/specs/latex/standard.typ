@@ -205,6 +205,8 @@
     let s = get-tex-str(it)
     s.clusters().map(x => $scr(#x)$).join()
   }),
+  // itex (Instiki/nLab): \underoverset{below}{above}{base}
+  underoverset: define-cmd(3, handle: (below, above, base) => math.attach(base, t: above, b: below)),
   mathbin: define-cmd(1, handle: it => math.class("binary", it)),
   mathclose: define-cmd(1, handle: it => math.class("closing", it)),
   mathinner: define-cmd(1, handle: it => math.class("fence", it)),
