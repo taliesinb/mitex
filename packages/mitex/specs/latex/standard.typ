@@ -982,6 +982,16 @@
   cotg: of-sym(math.op("cotg")),
   injlim: of-sym(math.op("inj\u{2009}lim", limits: true)),
   mathclap: define-cmd(1, handle: it => box(width: 0pt, $it$)),
+  shortmid: define-sym("bar.v"),
+  scalebox: define-cmd(2, handle: (f, it) => text(
+    size: eval(get-tex-str(f)) * 1em,
+    it,
+  )),
+  rotatebox: define-cmd(2, handle: (deg, it) => rotate(
+    -eval(get-tex-str(deg)) * 1deg,
+    reflow: true,
+    it,
+  )),
   mathring: define-cmd(1, handle: it => math.circle(it)),
   nobreak: ignore-sym,
   noexpand: ignore-sym,
@@ -1122,7 +1132,9 @@
   textsf: define-cmd(1, alias: "#textsf", handle: math.sans),
   texttt: define-cmd(1, alias: "#texttt", handle: math.mono),
   over: define-infix-cmd("frac"),
-  atop: define-infix-cmd("atop", handle: (a, b) => $mat(delim: #none, #a; #b)$),
+  // `#a; #b` would terminate the code expression at the semicolon
+  // instead of separating matrix rows, flattening the stack
+  atop: define-infix-cmd("atop", handle: (a, b) => math.mat(delim: none, (a,), (b,))),
   choose: define-infix-cmd("binom", handle: math.binom),
   brace: define-infix-cmd("brace", handle: (n, k) => $mat(delim: "{", #n;; #k)$),
   brack: define-infix-cmd("brack", handle: (n, k) => $mat(delim: "[", #n;; #k)$),
