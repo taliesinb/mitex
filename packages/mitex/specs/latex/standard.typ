@@ -981,7 +981,7 @@
   cosec: of-sym(math.op("cosec")),
   cotg: of-sym(math.op("cotg")),
   injlim: of-sym(math.op("inj\u{2009}lim", limits: true)),
-  mathclap: define-cmd(1, handle: it => box(width: 0pt, $it$)),
+  mathclap: define-cmd(1, handle: it => context { let w = measure($it$).width; box(width: 0pt, move(dx: -w/2, box(width: w, $it$))) }),
   shortmid: define-sym("bar.v"),
   scalebox: define-cmd(2, handle: (f, it) => text(
     size: eval(get-tex-str(f)) * 1em,
