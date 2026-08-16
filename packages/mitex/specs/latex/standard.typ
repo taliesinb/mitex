@@ -244,8 +244,8 @@
   biggr: define-cmd(1, alias: "bigg"),
   Biggr: define-cmd(1, alias: "Bigg"),
   // LaTeX size switches scope to the end of the group, i.e. greedy
-  tiny: greedy-handle("mitexsizetiny", it => text(size: 0.5em, it)),
-  scriptsize: greedy-handle("mitexsizescript", it => text(size: 0.7em, it)),
+  tiny: greedy-handle("mitexsizetiny", it => text(size: 0.65em, it)),
+  scriptsize: greedy-handle("mitexsizescript", it => text(size: 0.75em, it)),
   footnotesize: greedy-handle("mitexsizefoot", it => text(size: 0.8em, it)),
   small: greedy-handle("mitexsizesmall", it => text(size: 0.9em, it)),
   normalsize: ignore-sym,
