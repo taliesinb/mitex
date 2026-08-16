@@ -244,16 +244,16 @@
   biggr: define-cmd(1, alias: "bigg"),
   Biggr: define-cmd(1, alias: "Bigg"),
   // LaTeX size switches scope to the end of the group, i.e. greedy
-  tiny: greedy-handle("mitexsizetiny", it => text(size: 0.65em, it)),
-  scriptsize: greedy-handle("mitexsizescript", it => text(size: 0.75em, it)),
-  footnotesize: greedy-handle("mitexsizefoot", it => text(size: 0.8em, it)),
-  small: greedy-handle("mitexsizesmall", it => text(size: 0.9em, it)),
+  tiny: greedy-handle("mitexsizetiny", it => text(size: 0.65em, math.display(it))),
+  scriptsize: greedy-handle("mitexsizescript", it => text(size: 0.75em, math.display(it))),
+  footnotesize: greedy-handle("mitexsizefoot", it => text(size: 0.8em, math.display(it))),
+  small: greedy-handle("mitexsizesmall", it => text(size: 0.9em, math.display(it))),
   normalsize: ignore-sym,
-  large: greedy-handle("mitexsizelarge", it => text(size: 1.2em, it)),
-  Large: greedy-handle("mitexsizeLarge", it => text(size: 1.44em, it)),
-  LARGE: greedy-handle("mitexsizeLARGE", it => text(size: 1.73em, it)),
-  huge: greedy-handle("mitexsizehuge", it => text(size: 2.07em, it)),
-  Huge: greedy-handle("mitexsizeHuge", it => text(size: 2.49em, it)),
+  large: greedy-handle("mitexsizelarge", it => text(size: 1.2em, math.display(it))),
+  Large: greedy-handle("mitexsizeLarge", it => text(size: 1.44em, math.display(it))),
+  LARGE: greedy-handle("mitexsizeLARGE", it => text(size: 1.73em, math.display(it))),
+  huge: greedy-handle("mitexsizehuge", it => text(size: 2.07em, math.display(it))),
+  Huge: greedy-handle("mitexsizeHuge", it => text(size: 2.49em, math.display(it))),
   // Colors
   color: define-greedy-cmd("#mitexcolor", handle: (model, texcolor, ..args) => {
     let color = get-tex-color(model, texcolor)
