@@ -243,17 +243,17 @@
   Bigr: define-cmd(1, alias: "Big"),
   biggr: define-cmd(1, alias: "bigg"),
   Biggr: define-cmd(1, alias: "Bigg"),
-  // todo: size, especially multi-line, ignore it for now.
-  Huge: ignore-sym,
+  // LaTeX size switches scope to the end of the group, i.e. greedy
+  tiny: greedy-handle("mitexsizetiny", it => text(size: 0.5em, it)),
+  scriptsize: greedy-handle("mitexsizescript", it => text(size: 0.7em, it)),
+  footnotesize: greedy-handle("mitexsizefoot", it => text(size: 0.8em, it)),
+  small: greedy-handle("mitexsizesmall", it => text(size: 0.9em, it)),
   normalsize: ignore-sym,
-  huge: ignore-sym,
-  small: ignore-sym,
-  footnotesize: ignore-sym,
-  Large: ignore-sym,
-  LARGE: ignore-sym,
-  scriptsize: ignore-sym,
-  large: ignore-sym,
-  tiny: ignore-sym,
+  large: greedy-handle("mitexsizelarge", it => text(size: 1.2em, it)),
+  Large: greedy-handle("mitexsizeLarge", it => text(size: 1.44em, it)),
+  LARGE: greedy-handle("mitexsizeLARGE", it => text(size: 1.73em, it)),
+  huge: greedy-handle("mitexsizehuge", it => text(size: 2.07em, it)),
+  Huge: greedy-handle("mitexsizeHuge", it => text(size: 2.49em, it)),
   // Colors
   color: define-greedy-cmd("#mitexcolor", handle: (model, texcolor, ..args) => {
     let color = get-tex-color(model, texcolor)
@@ -981,7 +981,7 @@
   cosec: of-sym(math.op("cosec")),
   cotg: of-sym(math.op("cotg")),
   injlim: of-sym(math.op("inj\u{2009}lim", limits: true)),
-  mathclap: define-cmd(1, handle: it => context { let w = measure($it$).width; box(width: 0pt, move(dx: -w/2, box(width: w, $it$))) }),
+  mathclap: define-cmd(1, handle: it => context { let w = measure($it$).width; h(-w/2) + $it$ + h(-w/2) }),
   shortmid: define-sym("bar.v"),
   scalebox: define-cmd(2, handle: (f, it) => text(
     size: eval(get-tex-str(f)) * 1em,
