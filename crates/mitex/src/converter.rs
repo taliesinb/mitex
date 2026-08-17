@@ -494,9 +494,16 @@ impl Converter {
         // remove prefix \
         let name = &name[1..];
         // get cmd_shape and arg_shape from spec
-        let cmd_shape = spec
-            .get_cmd(name)
-            .ok_or_else(|| format!("unknown command: \\{}", name))?;
+        let Some(cmd_shape) = spec.get_cmd(name) else {
+            // itex2MML renders unknown commands as an upright operator
+            // of the same name; nLab pages rely on this constantly
+            if matches!(self.mode, LaTeXMode::Text) {
+                write!(f, "{} ", name)?;
+            } else {
+                write!(f, "upright(\"{}\") ", name)?;
+            }
+            return Ok(());
+        };
         // typst alias name
         let typst_name = cmd_shape.alias.as_deref().unwrap_or(name);
         // write to output
@@ -769,9 +776,19 @@ impl Converter {
             .collect::<Vec<_>>();
 
         // get cmd_shape and arg_shape from spec
-        let cmd_shape = spec
-            .get_cmd(name)
-            .ok_or_else(|| format!("unknown command: \\{}", name))?;
+        let Some(cmd_shape) = spec.get_cmd(name) else {
+            // unknown command with clause: upright name, then convert
+            // whatever followed as ordinary content
+            if matches!(self.mode, LaTeXMode::Text) {
+                write!(f, "{} ", name)?;
+            } else {
+                write!(f, "upright(\"{}\") ", name)?;
+            }
+            for arg in args {
+                self.convert(f, arg, spec)?;
+            }
+            return Ok(());
+        };
         let arg_shape = &cmd_shape.args;
 
         // typst alias name

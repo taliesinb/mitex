@@ -20,11 +20,15 @@
   "teal": rgb(0, 128, 128),
   "olive": rgb(128, 128, 0),
 )
-#let get-tex-str-from-arr(arr) = arr.filter(it => it != [ ] and it != [#math.zws]).map(it => it.text).sum()
-#let get-tex-str(tex) = if tex.has("children") {
+#let get-tex-str-from-arr(arr) = arr.filter(it => it != [ ] and it != [#math.zws]).map(it => if type(it) == str { it } else if it.has("text") { it.text } else { "" }).sum(default: "")
+#let get-tex-str(tex) = if type(tex) == str {
+  tex
+} else if tex.has("children") {
   get-tex-str-from-arr(tex.children)
-} else {
+} else if tex.has("text") {
   tex.text
+} else {
+  ""
 }
 #let get-tex-color-from-arr(arr) = {
   mitex-color-map.at(lower(get-tex-str-from-arr(arr)), default: none)
@@ -1063,13 +1067,18 @@
     if args.pos().len() == 0 {
       return
     }
-    if type(arg0) != str {
-      if arg0.has("children") {
+    if type(arg0) != str and type(arg0) != array {
+      if type(arg0) == content and arg0.func() == math.equation {
+        arg0 = arg0.body
+      }
+      if type(arg0) == content and arg0.has("children") {
         arg0 = arg0.children.filter(it => it != [ ] and it != [#math.zws])
-          .map(it => it.text)
+          .map(it => if it.has("text") { it.text } else { "" })
           .filter(it => it == "l" or it == "c" or it == "r")
-      } else {
+      } else if type(arg0) == content and arg0.has("text") {
         arg0 = (arg0.text,)
+      } else {
+        arg0 = ("c",)
       }
     }
     let matrix = args.pos().map(row => if type(row) == array { row } else { (row,) } )
