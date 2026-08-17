@@ -75,7 +75,7 @@
 #let operatornamewithlimits(it) = math.op(limits: true, math.upright(it))
 // \xrightarrow[below]{above}: the optional bracket argument is a label
 // under the arrow (amsmath).
-#let arrow-handle(arrow-sym) = define-glob-cmd("{,b}t", "xarrow", handle: (..args) => {
+#let arrow-handle(arrow-sym, alias: "xarrow") = define-glob-cmd("{,b}t", alias, handle: (..args) => {
   let pos = args.pos()
   if pos.len() >= 2 {
     let below = pos.at(0).children.filter(it => it != [\[] and it != [\]]).sum()
@@ -1024,25 +1024,25 @@
   varTheta: of-sym($italic(Theta)$),
   varUpsilon: of-sym($italic(Upsilon)$),
   varXi: of-sym($italic(Xi)$),
-  xleftarrow: arrow-handle(math.arrow.l),
-  xrightarrow: arrow-handle(math.arrow.r),
-  xLeftarrow: arrow-handle(math.arrow.l.double),
-  xRightarrow: arrow-handle(math.arrow.r.double),
-  xleftrightarrow: arrow-handle(math.arrow.l.r),
-  xLeftrightarrow: arrow-handle(math.arrow.l.r.double),
-  xhookleftarrow: arrow-handle(math.arrow.l.hook),
-  xhookrightarrow: arrow-handle(math.arrow.r.hook),
-  xtwoheadleftarrow: arrow-handle(math.arrow.l.twohead),
-  xtwoheadrightarrow: arrow-handle(math.arrow.r.twohead),
-  xleftharpoonup: arrow-handle(math.harpoon.lt),
-  xrightharpoonup: arrow-handle(math.harpoon.rt),
-  xleftharpoondown: arrow-handle(math.harpoon.lb),
-  xrightharpoondown: arrow-handle(math.harpoon.rb),
-  xleftrightharpoons: arrow-handle(math.harpoons.ltrb),
-  xrightleftharpoons: arrow-handle(math.harpoons.rtlb),
-  xtofrom: arrow-handle(math.arrows.rl),
-  xmapsto: arrow-handle(math.arrow.r.bar),
-  xlongequal: arrow-handle(math.eq),
+  xleftarrow: arrow-handle(math.arrow.l, alias: "xleftarrow"),
+  xrightarrow: arrow-handle(math.arrow.r, alias: "xrightarrow"),
+  xLeftarrow: arrow-handle(math.arrow.l.double, alias: "xLeftarrow"),
+  xRightarrow: arrow-handle(math.arrow.r.double, alias: "xRightarrow"),
+  xleftrightarrow: arrow-handle(math.arrow.l.r, alias: "xleftrightarrow"),
+  xLeftrightarrow: arrow-handle(math.arrow.l.r.double, alias: "xLeftrightarrow"),
+  xhookleftarrow: arrow-handle(math.arrow.l.hook, alias: "xhookleftarrow"),
+  xhookrightarrow: arrow-handle(math.arrow.r.hook, alias: "xhookrightarrow"),
+  xtwoheadleftarrow: arrow-handle(math.arrow.l.twohead, alias: "xtwoheadleftarrow"),
+  xtwoheadrightarrow: arrow-handle(math.arrow.r.twohead, alias: "xtwoheadrightarrow"),
+  xleftharpoonup: arrow-handle(math.harpoon.lt, alias: "xleftharpoonup"),
+  xrightharpoonup: arrow-handle(math.harpoon.rt, alias: "xrightharpoonup"),
+  xleftharpoondown: arrow-handle(math.harpoon.lb, alias: "xleftharpoondown"),
+  xrightharpoondown: arrow-handle(math.harpoon.rb, alias: "xrightharpoondown"),
+  xleftrightharpoons: arrow-handle(math.harpoons.ltrb, alias: "xleftrightharpoons"),
+  xrightleftharpoons: arrow-handle(math.harpoons.rtlb, alias: "xrightleftharpoons"),
+  xtofrom: arrow-handle(math.arrows.rl, alias: "xtofrom"),
+  xmapsto: arrow-handle(math.arrow.r.bar, alias: "xmapsto"),
+  xlongequal: arrow-handle(math.eq, alias: "xlongequal"),
   pmod: define-cmd(1, handle: it => $quad (mod thick it)$),
   pod: define-cmd(1, handle: it => $quad (it)$),
   "set": define-cmd(1, alias: "mitexset", handle: it => $\{it\}$),
